@@ -22,11 +22,22 @@ def read_salesman(salesman_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Salesman not found")
     return db_salesman
 
+@router.get("/{salesman_id}/contact-reports", response_model=list[schemas.ContactReport])
+def read_contact_reports(salesman_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return crud.get_contact_reports(db, salesman_id=salesman_id, skip=skip, limit=limit)
+
 @router.post("/", response_model=schemas.Salesman)
 def create_salesman(salesman: schemas.SalesmanCreate, db: Session = Depends(get_db)):
     return crud.create_salesman(db=db, salesman=salesman)
 
-# @router.post("/{salesman_id}/contact-report", response_model=schemas.ContactReport)
-# def create_contact_report(salesman_id: int, contact_report: schemas.ContactReportCreate, db: Session = Depends(get_db)):
-#     return crud.create_contact_report(db=db, contact_report=contact_report, salesman_id=salesman_id)
-    
+@router.post("/{salesman_id}/contact-report", response_model=schemas.ContactReport)
+def create_contact_report(salesman_id: int, contact_report: schemas.ContactReportCreate, db: Session = Depends(get_db)):
+    return crud.create_contact_report(db=db, contact_report=contact_report, salesman_id=salesman_id)
+
+@router.delete("/{salesman_id}", response_model=dict)
+def delete_salesman(salesman_id: int, db: Session = Depends(get_db)):
+    return crud.delete_salesman(db=db, salesman_id=salesman_id)
+
+@router.delete("/contact-report/{contact_report_id}", response_model=dict)
+def delete_contact_report(contact_report_id: int, db: Session = Depends(get_db)):
+    return crud.delete_contact_report(db=db, contact_report_id=contact_report_id)
