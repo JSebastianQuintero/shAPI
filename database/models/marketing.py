@@ -2,12 +2,14 @@ from sqlalchemy import ForeignKey
 from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..database import Base
-from .person import PersonModel
+from .client import ClientModel
 
-class SalesmanModel(PersonModel):
+class SalesmanModel(Base):
     __tablename__ = "salesman"
 
-    id : Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    id : Mapped[int] = mapped_column( primary_key=True)
+    first_name : Mapped[str]
+    last_name : Mapped[str]
     contact_reports : Mapped[List["ContactReportModel"]] = relationship("ContactReportModel", back_populates="salesman")
     total_sales : Mapped[int]
 

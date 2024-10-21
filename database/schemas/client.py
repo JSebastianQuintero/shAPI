@@ -1,31 +1,28 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-class ContactNumberBase(BaseModel):
-    code: str
-    number: str
-
-class ContactNumberCreate(ContactNumberBase):
-    pass
+class ContactNumberCreate(BaseModel):
+    code: int
+    number: int
 
 class ContactNumber(BaseModel):
     id: int
-    person_id: int
+    client_id: int
     number: str  
 
     class Config:
         orm_mode = True
         
-class PersonBase(BaseModel):
+class ClientBase(BaseModel):
     first_name: str
     last_name: str
+    location: Optional[str] = None
 
-class PersonCreate(PersonBase):
+class ClientCreate(ClientBase):
     pass
 
-class Person(PersonBase):
+class Client(ClientBase):
     id: int
-    contact_numbers: List[ContactNumber] = []
 
     class Config:
         orm_mode = True

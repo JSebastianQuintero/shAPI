@@ -2,11 +2,11 @@ from fastapi import FastAPI, APIRouter
 
 # routes
 from paths.houses import router as houseRouter
-from paths.persons import router as personRouter
 from paths.marketing import router as marketingRouter
+from paths.clients import router as clientRouter
 
 app = FastAPI()
 
 app.include_router(houseRouter)
-app.include_router(personRouter)
 app.include_router(marketingRouter)
+app.include_router(clientRouter)
