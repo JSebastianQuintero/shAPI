@@ -11,7 +11,7 @@ class ClientModel(Base):
     last_name : Mapped[str]
     location : Mapped[Optional[str]]
     contact_numbers : Mapped[List["ContactNumberModel"]] = relationship("ContactNumberModel", back_populates="client")
-    
+    houses : Mapped[List["HouseModel"]] = relationship("HouseModel", back_populates="owner")
 class ContactNumberModel(Base):
     __tablename__ = "contact_number"
     
@@ -19,3 +19,5 @@ class ContactNumberModel(Base):
     number : Mapped[str]
     client_id : Mapped[int] = mapped_column(ForeignKey("client.id"))
     client: Mapped["ClientModel"] = relationship("ClientModel", back_populates="contact_numbers")
+
+from .houses import HouseModel

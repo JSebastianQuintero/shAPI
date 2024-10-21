@@ -24,7 +24,43 @@ def get_client(db: Session, client_id: int):
 def get_clients(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.ClientModel).offset(skip).limit(limit).all()
 
+def get_contact_numbers(db: Session, client_id: int):
+    db_client = db.query(models.ClientModel).filter(models.ClientModel.id == client_id).first()
+    if not db_client:
+        return {"message": "Client not found"}
+    return db.query(models.ContactNumberModel).filter(models.ContactNumberModel.client_id == client_id).all()
+
 # update 
+def update_client_first_name(db: Session, client_id: int, new_name: str):
+    if new_name == "" or new_name.isspace():
+        return {"message": "Invalid name"}
+    client = db.query(models.ClientModel).filter(models.ClientModel.id == client_id)
+    if not client.first():
+        return {"message": "Client not found"}
+    client.update({"first_name": new_name})
+    db.commit()
+    return {"message": "Client updated successfully"}
+
+def update_client_last_name(db: Session, client_id: int, new_name: str):
+    if new_name == "" or new_name.isspace():
+        return {"message": "Invalid name"}
+    client = db.query(models.ClientModel).filter(models.ClientModel.id == client_id)
+    if not client.first():
+        return {"message": "Client not found"}
+    client.update({"last_name": new_name})
+    db.commit()
+    return {"message": "Client updated successfully"}
+
+def update_client_location(db: Session, client_id: int, new_location: str):
+    if new_location == "" or new_location.isspace():
+        return {"message": "Invalid location"}
+    client = db.query(models.ClientModel).filter(models.ClientModel.id == client_id)
+    if not client.first():
+        return {"message": "Client not found"}
+    client.update({"location": new_location})
+    db.commit()
+    return {"message": "Client updated successfully"}
+
 # delete
 def delete_client(db: Session, client_id: int):
     client = db.query(models.ClientModel).filter(models.ClientModel.id == client_id)
