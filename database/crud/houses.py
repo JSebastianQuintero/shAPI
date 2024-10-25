@@ -4,7 +4,7 @@ from database.schemas import houses as schemas
 
 # create
 def create_house(db: Session, house: schemas.HouseCreate):
-    db_house = models.HouseModel(address=house.address, location=house.location, price=house.price, owner_id=house.owner_id)
+    db_house = models.HouseModel(address=house.address, location=house.location, price=house.price, owner_id=house.owner_id, region=house.region)
     db.add(db_house)
     db.commit()
     db.refresh(db_house)
