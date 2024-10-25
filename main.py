@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 
 # routes
 from paths.houses import router as houseRouter
