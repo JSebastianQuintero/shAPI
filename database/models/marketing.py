@@ -39,3 +39,4 @@ class HousePostModel(Base):
     garage : Mapped[bool]
     pergola : Mapped[bool]
     gallery : Mapped[bool]
+    img_path : Mapped[str]

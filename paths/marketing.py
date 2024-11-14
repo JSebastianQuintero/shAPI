@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
-from typing import Annotated
+from typing import Annotated, List
+import os
+import base64
 
 from database.crud import marketing as crud
 from database.schemas import marketing as schemas
@@ -10,17 +12,6 @@ from database.database import SessionLocal, engine, get_db
 model.Base.metadata.create_all(bind=engine)
 
 router = APIRouter(prefix="/marketing", tags=["Marketing"])
-
-# files
-
-@router.post("/uploadfile/")
-async def create_upload_file(file: UploadFile):
-    file_location = f"files/{file.filename}"
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
-    return {"filename": file.filename, "file_location": file_location}
-
-# routes
 
 @router.get("/salesmans/", response_model=list[schemas.Salesman])
 def read_salesmen(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
@@ -38,9 +29,17 @@ def read_salesman(salesman_id: int, db: Session = Depends(get_db)):
 def read_contact_reports(salesman_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_contact_reports(db, salesman_id=salesman_id, skip=skip, limit=limit)
 
-@router.get("/house-posts", response_model=list[schemas.HousePost])
+@router.get("/house-posts", response_model=List[schemas.HousePost])
 def read_house_posts(db: Session = Depends(get_db)):
-    return crud.get_house_posts(db)
+    house_posts = crud.get_house_posts(db)
+    for house_post in house_posts:
+        file_path = f"files/{house_post.name}.jpg"  # Asume que el nombre del archivo es el mismo que el nombre del house post
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as image_file:
+                house_post.image = base64.b64encode(image_file.read()).decode("utf-8")
+        else:
+            house_post.image = None
+    return house_posts
 
 @router.post("/salesmans/", response_model=schemas.Salesman)
 def create_salesman(salesman: schemas.SalesmanCreate, db: Session = Depends(get_db)):
@@ -51,8 +50,46 @@ def create_contact_report(salesman_id: int, contact_report: schemas.ContactRepor
     return crud.create_contact_report(db=db, contact_report=contact_report, salesman_id=salesman_id)
 
 @router.post("/house-posts", response_model=schemas.HousePost)
-def create_house_post(house_post: schemas.HousePostCreate, db: Session = Depends(get_db)):
-    return crud.create_house_post(db=db, house_post=house_post)
+async def create_house_post(
+    file: UploadFile = File(...),
+    name: str = Form(...),
+    starting_price: int = Form(...),
+    bedrooms: int = Form(...),
+    bathrooms: int = Form(...),
+    covered_area: int = Form(...),
+    semicovered_area: int = Form(...),
+    living_room: bool = Form(...),
+    kitchen: bool = Form(...),
+    dining_room: bool = Form(...),
+    garage: bool = Form(...),
+    pergola: bool = Form(...),
+    gallery: bool = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Crear el directorio 'files' si no existe
+    os.makedirs("files", exist_ok=True)
+    
+    file_location = f"files/{file.filename}"
+    with open(file_location, "wb") as f:
+        f.write(await file.read())
+    
+    house_post_data = schemas.HousePostCreate(
+        name=name,
+        starting_price=starting_price,
+        bedrooms=bedrooms,
+        bathrooms=bathrooms,
+        covered_area=covered_area,
+        semicovered_area=semicovered_area,
+        living_room=living_room,
+        kitchen=kitchen,
+        dining_room=dining_room,
+        garage=garage,
+        pergola=pergola,
+        gallery=gallery,
+        img_path=file_location
+    )
+    
+    return crud.create_house_post(db=db, house_post=house_post_data)
 
 @router.delete("/salesmans/{salesman_id}", response_model=dict)
 def delete_salesman(salesman_id: int, db: Session = Depends(get_db)):

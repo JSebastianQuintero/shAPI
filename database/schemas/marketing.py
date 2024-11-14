@@ -40,6 +40,7 @@ class HousePostBase(BaseModel):
     garage : bool
     pergola : bool
     gallery : bool
+    img_path: str
 class HousePost(HousePostBase):
     id: int
     class Config:
