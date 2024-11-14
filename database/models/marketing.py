@@ -23,3 +23,19 @@ class ContactReportModel(Base):
     salesman_id : Mapped["SalesmanModel"] = mapped_column(ForeignKey("salesman.id"))
     salesman: Mapped["SalesmanModel"] = relationship("SalesmanModel", back_populates="contact_reports")
     
+class HousePostModel(Base):
+    __tablename__ = "house_post"
+    
+    id : Mapped[int] = mapped_column(primary_key=True)
+    name : Mapped[str]
+    starting_price : Mapped[int]
+    bedrooms : Mapped[int]
+    bathrooms : Mapped[int]
+    covered_area : Mapped[int]
+    semicovered_area : Mapped[int]
+    living_room : Mapped[bool]
+    kitchen : Mapped[bool]
+    dining_room : Mapped[bool]
+    garage : Mapped[bool]
+    pergola : Mapped[bool]
+    gallery : Mapped[bool]

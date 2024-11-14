@@ -26,3 +26,24 @@ class ContactReport(BaseModel):
 class ContactReportCreate(BaseModel):
     report: str
     next_contact: str
+
+class HousePostBase(BaseModel):
+    name : str
+    starting_price : int
+    bedrooms : int
+    bathrooms : int
+    covered_area : int
+    semicovered_area : int
+    living_room : bool
+    kitchen : bool
+    dining_room : bool
+    garage : bool
+    pergola : bool
+    gallery : bool
+class HousePost(HousePostBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+class HousePostCreate(HousePostBase):
+    pass
