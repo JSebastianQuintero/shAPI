@@ -40,3 +40,11 @@ class HousePostModel(Base):
     pergola : Mapped[bool]
     gallery : Mapped[bool]
     img_path : Mapped[str]
+
+class Contact(Base):
+    __tablename__ = "contact"
+    id : Mapped[int] = mapped_column(primary_key=True)
+    name : Mapped[str]
+    email : Mapped[str]
+    phone : Mapped[str]
+    message : Mapped[str]    

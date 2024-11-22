@@ -25,7 +25,18 @@ def create_house_post(db: Session, house_post: schemas.HousePostCreate):
     db.refresh(db_house_post)
     return db_house_post
 
+def create_contact(db: Session, contact: schemas.ContactCreate):
+    new_number = f"{contact.code}-{contact.number}"
+    db_contact = models.Contact(name=contact.name, email=contact.email, phone=new_number, message=contact.message)
+    db.add(db_contact)
+    db.commit()
+    db.refresh(db_contact)
+    return db_contact
+
 # read
+def get_contacts(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Contact).offset(skip).limit(limit).all()
+
 def get_salesman(db: Session, salesman_id: int):
     salesman = db.query(models.SalesmanModel).filter(models.SalesmanModel.id == salesman_id).first()
     if not salesman:
@@ -43,6 +54,11 @@ def get_house_posts(db: Session):
 
 # update 
 # delete
+def delete_contact(db: Session, contact_id: int):
+    db.query(models.ContactModel).filter(models.ContactModel.id == contact_id).delete()
+    db.commit()
+    return {"message": "Contact deleted"}
+
 def delete_salesman(db: Session, salesman_id: int):
     salesman = db.query(models.SalesmanModel).filter(models.SalesmanModel.id == salesman_id)
     if not salesman.first():

@@ -48,3 +48,17 @@ class HousePost(HousePostBase):
 
 class HousePostCreate(HousePostBase):
     pass
+class ContactBase(BaseModel):
+    name: str
+    email: str
+    message: str
+
+class Contact(ContactBase):
+    id: int
+    phone: str
+    class Config:
+        orm_mode = True
+        
+class ContactCreate(ContactBase):
+    code: int
+    number: int

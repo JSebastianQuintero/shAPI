@@ -32,14 +32,12 @@ def read_contact_reports(salesman_id: int, skip: int = 0, limit: int = 10, db: S
 @router.get("/house-posts", response_model=List[schemas.HousePost])
 def read_house_posts(db: Session = Depends(get_db)):
     house_posts = crud.get_house_posts(db)
-    for house_post in house_posts:
-        file_path = f"files/{house_post.name}.jpg"  # Asume que el nombre del archivo es el mismo que el nombre del house post
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as image_file:
-                house_post.image = base64.b64encode(image_file.read()).decode("utf-8")
-        else:
-            house_post.image = None
     return house_posts
+
+@router.get("/contact/", response_model=List[schemas.Contact])
+def read_contacts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    contacts = crud.get_contacts(db, skip=skip, limit=limit)
+    return contacts
 
 @router.post("/salesmans/", response_model=schemas.Salesman)
 def create_salesman(salesman: schemas.SalesmanCreate, db: Session = Depends(get_db)):
@@ -67,9 +65,9 @@ async def create_house_post(
     db: Session = Depends(get_db)
 ):
     # Crear el directorio 'files' si no existe
-    os.makedirs("files", exist_ok=True)
+    os.makedirs("housePostImg", exist_ok=True)
     
-    file_location = f"files/{file.filename}"
+    file_location = f"housePostImg/{file.filename}"
     with open(file_location, "wb") as f:
         f.write(await file.read())
     
@@ -90,6 +88,10 @@ async def create_house_post(
     )
     
     return crud.create_house_post(db=db, house_post=house_post_data)
+
+@router.post("/contact/", response_model=schemas.Contact)
+def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)):
+    return crud.create_contact(db=db, contact=contact)
 
 @router.delete("/salesmans/{salesman_id}", response_model=dict)
 def delete_salesman(salesman_id: int, db: Session = Depends(get_db)):
