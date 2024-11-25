@@ -51,7 +51,7 @@ class HousePostCreate(HousePostBase):
 class ContactBase(BaseModel):
     name: str
     email: str
-    message: str
+    message: Optional[str] = None
 
 class Contact(ContactBase):
     id: int
